@@ -1,0 +1,27 @@
+################################################################################
+# Automatically-generated file. Do not edit!
+# Toolchain: GNU Tools for STM32 (12.3.rel1)
+################################################################################
+
+# Add inputs and outputs from these tool invocations to the build variables 
+C_SRCS += \
+../Middlewares/Third-Party/tinyusb/src/portable/valentyusb/eptri/dcd_eptri.c 
+
+OBJS += \
+./Middlewares/Third-Party/tinyusb/src/portable/valentyusb/eptri/dcd_eptri.o 
+
+C_DEPS += \
+./Middlewares/Third-Party/tinyusb/src/portable/valentyusb/eptri/dcd_eptri.d 
+
+
+# Each subdirectory must supply rules for building sources it contributes
+Middlewares/Third-Party/tinyusb/src/portable/valentyusb/eptri/%.o Middlewares/Third-Party/tinyusb/src/portable/valentyusb/eptri/%.su Middlewares/Third-Party/tinyusb/src/portable/valentyusb/eptri/%.cyclo: ../Middlewares/Third-Party/tinyusb/src/portable/valentyusb/eptri/%.c Middlewares/Third-Party/tinyusb/src/portable/valentyusb/eptri/subdir.mk
+	arm-none-eabi-gcc "$<" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F302xC -DCFG_TUSB_MCU=OPT_MCU_STM32F3 -c -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F3xx/Include -I../Drivers/STM32F3xx_HAL_Driver/Inc -I../Src -I../Inc -I../Middlewares/Third-Party/tinyusb/src -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
+
+clean: clean-Middlewares-2f-Third-2d-Party-2f-tinyusb-2f-src-2f-portable-2f-valentyusb-2f-eptri
+
+clean-Middlewares-2f-Third-2d-Party-2f-tinyusb-2f-src-2f-portable-2f-valentyusb-2f-eptri:
+	-$(RM) ./Middlewares/Third-Party/tinyusb/src/portable/valentyusb/eptri/dcd_eptri.cyclo ./Middlewares/Third-Party/tinyusb/src/portable/valentyusb/eptri/dcd_eptri.d ./Middlewares/Third-Party/tinyusb/src/portable/valentyusb/eptri/dcd_eptri.o ./Middlewares/Third-Party/tinyusb/src/portable/valentyusb/eptri/dcd_eptri.su
+
+.PHONY: clean-Middlewares-2f-Third-2d-Party-2f-tinyusb-2f-src-2f-portable-2f-valentyusb-2f-eptri
+
