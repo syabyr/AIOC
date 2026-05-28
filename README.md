@@ -1,4 +1,4 @@
-[![](https://dcbadge.vercel.app/api/server/wCbXu9R95C?style=flat&theme=default-inverted)](https://discord.gg/wCbXu9R95C)
+[![](https://dcbadge.limes.pink/api/server/wCbXu9R95C?style=flat)](https://discord.gg/wCbXu9R95C)
 [![](https://img.shields.io/github/stars/skuep/AIOC)](https://github.com/skuep/AIOC/stargazers)
 [![](https://img.shields.io/github/v/release/skuep/AIOC?sort=semver)](https://github.com/skuep/AIOC/releases)
 [![](https://img.shields.io/github/license/skuep/AIOC)](https://github.com/skuep/AIOC/blob/master/LICENSE.md)
@@ -6,7 +6,7 @@
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F2F415AKJV)
 
 # AIOC
-This is the Ham Radio *All-in-one-Cable*. **It is currently still being tested!** Please read this README carefully before ordering anything.
+This is the Ham Radio *All-in-one-Cable*. It has been in testing stage for a long time, but so far no dealbreaking issues have been found so it is pretty safe to build it. Still, please read this README carefully before ordering anything.
 
 ![AIOC with Wouxun and Direwolf](doc/images/k1-aioc-wouxun.jpg?raw=true "AIOC with Wouxun and Direwolf")
 
@@ -26,7 +26,7 @@ There is also a German 4-part article with instructions [here](https://dl-nordwe
 - Compact form-factor (DIY overmolded enclosure is currently TBD)
 - Based on easy-to-hack **STM32F302** with internal ADC/DAC (Programmable via USB bootloader using [DFU](#how-to-program))
 - Can support Dual-PTT HTs
-- Supports all popular OSes (Linux, Windows and MacOS with limitations [[*]](https://github.com/skuep/AIOC/issues/13))
+- Supports all popular OSes (Linux, Windows and MacOS)
   
 ## Compatibility
 ### Software
@@ -46,7 +46,7 @@ There is also a German 4-part article with instructions [here](https://dl-nordwe
 ![Top side of PCB](doc/images/k1-aioc-photo.jpg?raw=true "Top side of PCB")
 
 ## How To Fab
-- Go to JLCPCB.com and upload the GERBER-k1-aioc.zip package (under ``kicad/k1-aioc/jlcpcb``)
+- Go to JLCPCB.com and upload the ``GERBER-k1-aioc.zip`` package (under ``kicad/k1-aioc/jlcpcb``)
   - Select PCB Thickness 1.2mm (that is what I recommend with the TRS connectors I used)
   - You may want to select LeadFree HASL
   - Select Silkscreen/Soldermask color to your liking
@@ -58,7 +58,8 @@ There is also a German 4-part article with instructions [here](https://dl-nordwe
   - Click "Add BOM File" and upload ``BOM-k1-aioc.csv``
   - Click "Add CPL File" and upload ``CPL-k1-aioc.csv``
   - Press Next
-  - Look Through components, see if something is missing or problematic and press Next
+  - Look Through components, see if something is missing or problematic
+  - **Make sure that all listed components are selected** and press Next 
   - Check everything looks roughly good (rotations are already baked-in and should be correct). Save to Cart
 
 This gives you 5 (or more) SMD assembled AIOC. The only thing left to do is soldering on the TRS connectors (see [here](#how-to-assemble)).
@@ -71,12 +72,14 @@ H1,H2 designators don't exist in the BOM file.
 J2,D3,D4,R17 designators don't exist in the CPL file.
 ````
 
-__Note__ for people doing their own PCB production: I suggest using the LCSC part numbers in the BOM file as a guide on what to buy (especially regarding the MCU).
+__Note__ for people doing their own PCB production: I suggest using the LCSC part numbers in the BOM file as a guide on what to buy (especially regarding the MCU). Despite the STM32F373 in the BOM, the firmware currently only supports the STM32F302 as given in the LCSC ordering information.
 
-__Note__ the current hardware version is **1.0**, but there is a version **1.2** currently in the making [here](https://github.com/skuep/AIOC/pull/93) that will feature
-- support for an external hardware input (e.g. for COS)
-- a split pad for the PTT/UART contact, so in case you would like to use the AIOC hardware for another purpose than a K1-style connector, you can separate these two signals that are otherwise connected to the same TRS contact.
+__Note__ As of 2025-09-25, the current hardware version is **1.2**. The minimum firmware version for this hardware version is 1.4.0. 
+The following features have been added.
+- Support for an external hardware input (e.g. for COS)
+- A split pad for the PTT/UART contact, so in case you would like to use the AIOC hardware for another purpose than a K1-style connector, you can separate these two signals that are otherwise connected to the same TRS contact.
 - Adjustable input and output audio levels (line-level, mic-level)
+- A fox hunt mode, where the AIOC operates as a simple morse code beacon
   
 ## How To Assemble
 This is the process I use for building. See photographs in ``images`` folder.
@@ -145,6 +148,12 @@ Since firmware version 1.2.0, a CM108 style PTT interface is available for publi
 Direwolf on Linux is confirmed working, please report any issues. Note that currently, Direwolf reports some warnings when using the CM108 PTT interface on the AIOC. 
 While they are annoying, they are safe to ignore and require changes in the upstream direwolf sourcecode. See https://github.com/wb2osz/direwolf/issues/448 for more details.
 
+Since firmware version 1.3.0, a HID interface is also available, that allows reconfiguration of the AIOC from the PC. There are code snippets in the Release Notes for various features.
+There is also a command-line utility by Hrafnkell Eiríksson available [here](https://github.com/hrafnkelle/aioc-util).
+
+**For advanced use of the AIOC, refer to this pinout image.**
+![](doc/images/k1-aioc-pinout.svg)
+
 ## Notes on Direwolf
 - Follow the regular setup guide with [Direwolf](https://github.com/wb2osz/direwolf) to determine the correct audio device to use. 
   For the serial and CM108 PTT interfaces on Linux, you need to set correct permissions on the ttyACM/hidraw devices. Consult Direwolf manual.
@@ -206,8 +215,6 @@ Select "DTR only" for PTT Pin, so that the correct RTS/DTR sequence is generated
 # Known issues
 There are known issues with EMI, when using a handheld radio with a monopole (i.e. stock) antenna. In this case, the USB cable will (inadvertently) work as a tiger-tail (counterpoise) and thus, high RF currents go through the USB lines which cause issues with the USB connection. Some people have connected cables between the radio and the AIOC and put a ferrite core on those wires, which seems to reduce those issues. I am trying to find out, which of the wires between the radio and the AIOC produce the problem, so that we might add SMD ferrites on the AIOC in the future
 
-# Future work
-I encourage you to check for Pre-Releases announcing upcoming features. Currently we are working on
-- **Configurable AIOC**: Change the way the PTT is asserted or the USB VID:PID that the AIOC uses using a Python script. These settings can be stored on the AIOC.
-- **Virtual-PTT**: This feature allows your AIOC to be configured to automatically assert the PTT line when it receives TX data from your PC.
-- **Virtual-COS**: The AIOC will notify your PC (e.g. using CM108 emulation) that there is audio data on the microphone input.
+As a workaround, you can try to reduce the transmit power or use a tiger-tail (counterpoise). Additionally, a good solution is to use a balanced antenna, such as my [EZ-Dipole](https://github.com/skuep/EZ-Dipole).
+
+

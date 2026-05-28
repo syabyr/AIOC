@@ -3,6 +3,7 @@
 #include "settings.h"
 #include "led.h"
 #include "usb.h"
+#include "fox_hunt.h"
 #include <assert.h>
 #include <io.h>
 #include <stdio.h>
@@ -189,22 +190,32 @@ int main(void)
 
     USB_Init();
 
+    FoxHunt_Init();
+
     /* Enable indepedent watchdog to reset on lockup*/
     IWDG_HandleTypeDef IWDGHandle = {
         .Instance = IWDG,
         .Init = {
             .Prescaler = IWDG_PRESCALER_8,
-            .Reload = 0x0FFF,
+            .Reload = 0x02FF,
             .Window = 0x0FFF
         }
     };
     HAL_IWDG_Init(&IWDGHandle);
 
-    uint32_t i = 0;
     while (1) {
         USB_Task();
 
-        if ( (i++ & 0x7FFF) == 0) {
+        static uint32_t lastTick = 0;
+        uint32_t nowTick = HAL_GetTick();
+
+        if ((nowTick - lastTick) >= 1000) {
+            lastTick = nowTick;
+
+            /* 1 second timebase */
+            FoxHunt_Tick();
+
+
             usb_audio_fbstats_t fb;
             USB_AudioGetSpeakerFeedbackStats(&fb);
 

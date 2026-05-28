@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include "usb_descriptors.h"
 
+
+#define SETTINGS_GET(REG, FIELD) ((settingsRegMap[REG] & (REG##_##FIELD##_##MASK)) >> (REG##_##FIELD##_##OFFS))
+
 #define SETTINGS_REGMAP_SIZE     256
 #define SETTINGS_REGMAP_READONLYADDR 0xC0
 
@@ -178,6 +181,26 @@ extern uint32_t settingsRegMap[SETTINGS_REGMAP_SIZE];
 #define SETTINGS_REG_SERIAL_IOMUX3_BRKSRC_IN2_MASK          SETTINGS_REG_SERIAL_IOMUX0_DCDSRC_IN2_MASK
 #define SETTINGS_REG_SERIAL_IOMUX3_BRKSRC_VCOS_MASK         SETTINGS_REG_SERIAL_IOMUX0_DCDSRC_VCOS_MASK
 
+/* Audio RX settings register */
+#define SETTINGS_REG_AUDIO_RX                               0x72
+#define SETTINGS_REG_AUDIO_RX_DEFAULT                       SETTINGS_REG_AUDIO_RX_RXGAIN_DFLT
+/* RXGAIN: Sets the RX gain of the audio input. Requires HW version >= 1.2 */
+#define SETTINGS_REG_AUDIO_RX_RXGAIN_DFLT                   SETTINGS_REG_AUDIO_RX_RXGAIN_1X_ENUM
+#define SETTINGS_REG_AUDIO_RX_RXGAIN_OFFS                   16
+#define SETTINGS_REG_AUDIO_RX_RXGAIN_MASK                   0x000F0000UL
+#define SETTINGS_REG_AUDIO_RX_RXGAIN_1X_ENUM                0x0
+#define SETTINGS_REG_AUDIO_RX_RXGAIN_2X_ENUM                0x1
+#define SETTINGS_REG_AUDIO_RX_RXGAIN_4X_ENUM                0x2
+#define SETTINGS_REG_AUDIO_RX_RXGAIN_8X_ENUM                0x3
+#define SETTINGS_REG_AUDIO_RX_RXGAIN_16X_ENUM               0x4
+
+/* Audio TX settings register */
+#define SETTINGS_REG_AUDIO_TX                               0x78
+#define SETTINGS_REG_AUDIO_TX_DEFAULT                       0
+/* TXBOOST: Defines the audio output level. Either MIC level or LINE level (boosted). Requires HW version >= 1.2 */
+#define SETTINGS_REG_AUDIO_TX_TXBOOST_OFFS                  8
+#define SETTINGS_REG_AUDIO_TX_TXBOOST_MASK                  (1UL << SETTINGS_REG_AUDIO_TX_TXBOOST_OFFS)
+
 /* Virtual PTT level control register */
 #define SETTINGS_REG_VPTT_LVLCTRL                           0x82
 #define SETTINGS_REG_VPTT_LVLCTRL_DEFAULT                   (SETTINGS_REG_VPTT_LVLCTRL_THRSHLD_DFLT)
@@ -209,6 +232,70 @@ extern uint32_t settingsRegMap[SETTINGS_REGMAP_SIZE];
 #define SETTINGS_REG_VCOS_TIMCTRL_TIMEOUT_DFLT              ((uint32_t) (200 << 4) << SETTINGS_REG_VCOS_TIMCTRL_TIMEOUT_OFFS)
 #define SETTINGS_REG_VCOS_TIMCTRL_TIMEOUT_OFFS              0
 #define SETTINGS_REG_VCOS_TIMCTRL_TIMEOUT_MASK              0x0000FFFFUL
+
+/* Fox Hunt settings register */
+#define SETTINGS_REG_FOXHUNT_CTRL                           0xA0
+#define SETTINGS_REG_FOXHUNT_CTRL_DEFAULT                   (SETTINGS_REG_FOXHUNT_CTRL_INTERVAL_DFLT | SETTINGS_REG_FOXHUNT_CTRL_WPM_DFLT | SETTINGS_REG_FOXHUNT_CTRL_VOLUME_DFLT)
+/* INTERVAL: Beacon interval in seconds */
+#define SETTINGS_REG_FOXHUNT_CTRL_INTERVAL_DFLT             ((uint32_t) 0 << SETTINGS_REG_FOXHUNT_CTRL_INTERVAL_OFFS)
+#define SETTINGS_REG_FOXHUNT_CTRL_INTERVAL_OFFS             0
+#define SETTINGS_REG_FOXHUNT_CTRL_INTERVAL_MASK             0x000000FFUL
+/* WPM: Words per Minute morse speed */
+#define SETTINGS_REG_FOXHUNT_CTRL_WPM_DFLT                  ((uint32_t) 20 << SETTINGS_REG_FOXHUNT_CTRL_WPM_OFFS)
+#define SETTINGS_REG_FOXHUNT_CTRL_WPM_OFFS                  8
+#define SETTINGS_REG_FOXHUNT_CTRL_WPM_MASK                  0x0000FF00UL
+/* VOLUME: Transmit volume */
+#define SETTINGS_REG_FOXHUNT_CTRL_VOLUME_DFLT               ((uint32_t) 32768 << SETTINGS_REG_FOXHUNT_CTRL_VOLUME_OFFS)
+#define SETTINGS_REG_FOXHUNT_CTRL_VOLUME_OFFS               16
+#define SETTINGS_REG_FOXHUNT_CTRL_VOLUME_MASK               0xFFFF0000UL
+
+/* Fox Hunt message 0 register */
+#define SETTINGS_REG_FOXHUNT_MSG0                           0xA2
+#define SETTINGS_REG_FOXHUNT_MSG0_DEFAULT                   0
+#define SETTINGS_REG_FOXHUNT_MSG0_CHAR00_OFFS               0
+#define SETTINGS_REG_FOXHUNT_MSG0_CHAR00_MASK               0x000000FFUL
+#define SETTINGS_REG_FOXHUNT_MSG0_CHAR01_OFFS               8
+#define SETTINGS_REG_FOXHUNT_MSG0_CHAR01_MASK               0x0000FF00UL
+#define SETTINGS_REG_FOXHUNT_MSG0_CHAR02_OFFS               16
+#define SETTINGS_REG_FOXHUNT_MSG0_CHAR02_MASK               0x00FF0000UL
+#define SETTINGS_REG_FOXHUNT_MSG0_CHAR03_OFFS               24
+#define SETTINGS_REG_FOXHUNT_MSG0_CHAR03_MASK               0xFF000000UL
+
+/* Fox Hunt message 1 register */
+#define SETTINGS_REG_FOXHUNT_MSG1                           0xA3
+#define SETTINGS_REG_FOXHUNT_MSG1_DEFAULT                   0
+#define SETTINGS_REG_FOXHUNT_MSG1_CHAR04_OFFS               0
+#define SETTINGS_REG_FOXHUNT_MSG1_CHAR04_MASK               0x000000FFUL
+#define SETTINGS_REG_FOXHUNT_MSG1_CHAR05_OFFS               8
+#define SETTINGS_REG_FOXHUNT_MSG1_CHAR05_MASK               0x0000FF00UL
+#define SETTINGS_REG_FOXHUNT_MSG1_CHAR06_OFFS               16
+#define SETTINGS_REG_FOXHUNT_MSG1_CHAR06_MASK               0x00FF0000UL
+#define SETTINGS_REG_FOXHUNT_MSG1_CHAR07_OFFS               24
+#define SETTINGS_REG_FOXHUNT_MSG1_CHAR07_MASK               0xFF000000UL
+
+/* Fox Hunt message 2 register */
+#define SETTINGS_REG_FOXHUNT_MSG2                           0xA4
+#define SETTINGS_REG_FOXHUNT_MSG2_DEFAULT                   0
+#define SETTINGS_REG_FOXHUNT_MSG2_CHAR08_OFFS               0
+#define SETTINGS_REG_FOXHUNT_MSG2_CHAR08_MASK               0x000000FFUL
+#define SETTINGS_REG_FOXHUNT_MSG2_CHAR09_OFFS               8
+#define SETTINGS_REG_FOXHUNT_MSG2_CHAR09_MASK               0x0000FF00UL
+#define SETTINGS_REG_FOXHUNT_MSG2_CHAR10_OFFS               16
+#define SETTINGS_REG_FOXHUNT_MSG2_CHAR10_MASK               0x00FF0000UL
+#define SETTINGS_REG_FOXHUNT_MSG2_CHAR11_OFFS               24
+#define SETTINGS_REG_FOXHUNT_MSG2_CHAR11_MASK               0xFF000000UL
+
+/* Fox Hunt message 3 register */
+#define SETTINGS_REG_FOXHUNT_MSG3                           0xA5
+#define SETTINGS_REG_FOXHUNT_MSG3_DEFAULT                   0
+#define SETTINGS_REG_FOXHUNT_MSG3_CHAR12_OFFS               0
+#define SETTINGS_REG_FOXHUNT_MSG3_CHAR12_MASK               0x000000FFUL
+#define SETTINGS_REG_FOXHUNT_MSG3_CHAR13_OFFS               8
+#define SETTINGS_REG_FOXHUNT_MSG3_CHAR13_MASK               0x0000FF00UL
+#define SETTINGS_REG_FOXHUNT_MSG3_CHAR14_OFFS               16
+#define SETTINGS_REG_FOXHUNT_MSG3_CHAR14_MASK               0x00FF0000UL
+#define SETTINGS_REG_FOXHUNT_MSG3_CHAR15_OFFS               24
+#define SETTINGS_REG_FOXHUNT_MSG3_CHAR15_MASK               0xFF000000UL
 
 /* AIOC debug register 0 */
 #define SETTINGS_REG_INFO_AIOC0                             0xC0
@@ -336,7 +423,6 @@ extern uint32_t settingsRegMap[SETTINGS_REGMAP_SIZE];
 /* Maximum UAC2.0 Feedback Value since last playback */
 #define SETTINGS_REG_INFO_AUDIO15_PLAYFBMAX_OFFS            0
 #define SETTINGS_REG_INFO_AUDIO15_PLAYFBMAX_MASK            0xFFFFFFFFUL
-
 
 
 void Settings_Init();
